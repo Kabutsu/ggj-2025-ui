@@ -1,4 +1,4 @@
-import { CommentsIcon, CommentsIconFilled } from '../../icons';
+import { CommentsIcon } from '../../icons';
 
 type Props = {
   comments: number | null;
