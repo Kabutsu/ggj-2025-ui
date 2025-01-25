@@ -1,26 +1,27 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 
 import { CommentIcon } from '../../icons';
 import { usePostStore } from '../store';
 
 const Comment = () => {
   const { data: { id, comments }, comment: postComment } = usePostStore();
-  const [comment, setComment] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <form className="w-full relative" onSubmit={(e) => {
       e.preventDefault();
       postComment({
-        body: comment,
+        body: inputRef.current?.value || '',
         postId: id,
-        id: comments.sort((a, b) => a.id - b.id)[comments.length - 1].id + 1,
+        id: comments.sort((a, b) => a.id - b.id)[comments.length - 1]?.id + 1 || 1,
       });
-      setComment('');
+      // Clear and unfocus input
+      inputRef.current!.value = '';
+      inputRef.current?.blur();
     }}>
       <input
+        ref={inputRef}
         type="text"
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
         placeholder="Leave a comment..."
         className="w-full py-2 pl-2.5 pr-10 bg-off-gray text-gray-800 rounded-full relative"
       />

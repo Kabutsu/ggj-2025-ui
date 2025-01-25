@@ -6,7 +6,7 @@ const Comments = () => {
   return (
     <div className="flex items-center gap-1">
       <CommentsIcon className="w-6 h-6" />
-      <span>{comments.length || ''}</span>
+      <span>{comments.length}</span>
     </div>
   );
 };
