@@ -1,15 +1,19 @@
+import { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './App.css'
 
-const queryClient = new QueryClient();
+import LoadingSpinner from './components/loader';
+import GameRoom from './components/game-room';
 
-import Feed from './components/feed';
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Feed />
-    </QueryClientProvider>
+    <Suspense fallback={<LoadingSpinner />}>
+      <QueryClientProvider client={queryClient}>
+        <GameRoom />
+      </QueryClientProvider>
+    </Suspense>
   )
 }
 

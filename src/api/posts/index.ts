@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 
 export type User = {
   id: number;
@@ -31,7 +31,7 @@ const fetchPosts = async () => {
 };
 
 export const usePosts = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
   });
