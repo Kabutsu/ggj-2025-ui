@@ -2,12 +2,12 @@ import { CommentsIcon } from '../../icons';
 import { usePostStore } from '../store';
 
 const Comments = () => {
-  const { data: { comments } } = usePostStore();
+  const { data: { comments }, toggleCommentsView } = usePostStore();
   return (
-    <div className="flex items-center gap-1">
+    <button onClick={toggleCommentsView} className="flex items-center gap-1">
       <CommentsIcon className="w-6 h-6" />
       <span>{comments.length}</span>
-    </div>
+    </button>
   );
 };
 

@@ -13,7 +13,7 @@ function App() {
             id: i,
             name: `User ${i}`,
             username: `user${i}`,
-            email: `asdf@asdf.com`
+            sentiment: Math.floor(Math.random() * 100),
           }}
           body={`Post ${i}`}
           likes={i}

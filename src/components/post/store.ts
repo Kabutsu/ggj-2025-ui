@@ -12,6 +12,8 @@ type State = {
   removeLike: () => void;
   removeDislike: () => void;
   comment: (comment: Comment) => void;
+  viewingComments: boolean;
+  toggleCommentsView: () => void;
 };
 
 export const PostStore = createZustandContext((initialValue: Post) => {
@@ -22,6 +24,8 @@ export const PostStore = createZustandContext((initialValue: Post) => {
     removeLike: () => set((state) => ({ data: { ...state.data, likes: state.data.likes - 1 } })),
     removeDislike: () => set((state) => ({ data: { ...state.data, dislikes: state.data.dislikes - 1 } })),
     comment: (comment) => set((state) => ({ data: { ...state.data, comments: [...state.data.comments, comment] } })),
+    viewingComments: false,
+    toggleCommentsView: () => set((state) => ({ viewingComments: !state.viewingComments })),
   }));
 });
 
