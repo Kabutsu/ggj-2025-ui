@@ -23,7 +23,7 @@ export type Post = {
   comments: Array<Comment>;
 };
 
-const baseURL = `${'http://localhost:5000/posts'}`;
+const baseURL = `${import.meta.env.VITE_BASE_API_URL}/posts`;
 
 const fetchPosts = async () => {
   const { data } = await axios.get<Post[]>('/', { baseURL });
