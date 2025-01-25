@@ -30,7 +30,7 @@ const Dislike = () => {
       className="flex items-center gap-1"
     >
       <Icon className="w-6 h-6" />
-      <span>{dislikes}</span>
+      <span>{dislikes.length}</span>
     </button>
   );
 };

@@ -7,7 +7,7 @@ import { useReactions } from '../../../api/posts';
 
 const Like = () => {
   const socket = useSocket();
-  const { like: { mutate } } = useReactions();
+  const { like: { mutateAsync } } = useReactions();
   const { data: { likes, id: postId } } = usePostStore();
   const [liked, setLiked] = useState(false);
   const Icon = liked ? ThumbUpIconFilled : ThumbUpIcon;
@@ -15,10 +15,10 @@ const Like = () => {
   const onLike = () => {
     if (liked) {
       socket.emit('unlike', { postId });
-      mutate({ postId, undo: true });
+      mutateAsync({ postId, undo: true });
     } else {
       socket.emit('like', { postId });
-      mutate({ postId, undo: false });
+      mutateAsync({ postId, undo: false });
     }
 
     setLiked((prev) => !prev);
@@ -30,7 +30,7 @@ const Like = () => {
       className="flex items-center gap-1"
     >
       <Icon className="w-6 h-6" />
-      <span>{likes}</span>
+      <span>{likes.length}</span>
     </button>
   );
 };

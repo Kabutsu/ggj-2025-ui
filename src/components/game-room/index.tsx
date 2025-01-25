@@ -1,39 +1,35 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { useRooms } from '../../api/rooms';
 import Feed from '../feed';
+import { useRoomStore } from '../feed/store';
+
+const ROOM_CODE = 'asdf12';
 
 export default function GameRoom() {
-  const [roomCode, setRoomCode] = useState('asdf12');
   const usernameRef = useRef<HTMLInputElement>(null);
 
-  const setUsername = (username: string) => {
-    usernameRef.current!.value = username;
-  };
+  const { roomCode } = useRoomStore();
 
   const {
-    inRoom,
     joinRoomMutation: { mutate: handleJoinRoom },
-  } = useRooms({
-    setRoomCode,
-    setUsername,
-  });
+  } = useRooms();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleJoinRoom({
-      code: roomCode,
+      code: ROOM_CODE,
       name: usernameRef.current!.value,
       profileUrl: 'https://example.com',
     });
   };
 
-  if (inRoom) return <Feed />;
+  if (roomCode?.length) return <Feed />;
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col items-center justify-start gap-5 w-full h-full p-10 pt-25 opacity-0 transition-opacity duration-300 delay-150 animate-fadeIn"
+      className="flex flex-col items-center justify-start gap-5 w-full h-full p-10 pt-25"
     >
       <h1 className="text-off-black font-bold text-center mb-5">
         Welcome to<br /><span className="text-blue-400">The Social Bubble</span>

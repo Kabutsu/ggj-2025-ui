@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
 import { useSocket } from '../../lib/socket';
 import { User } from '../posts';
+import { useRoomStore } from '../../components/feed/store';
 
 type Room = {
   id: string;
@@ -22,55 +23,55 @@ type JoinRequest = {
 const baseURL = `${import.meta.env.VITE_BASE_API_URL}/rooms`;
 
 const createRoom = async () => await axios.post<undefined, Room>('/create', { baseURL });
-const joinRoom = async (req: JoinRequest) => await axios.post<JoinRequest, User>('/join-room', req, { baseURL });
+const joinRoom = async (req: JoinRequest) => await axios.post('/join-room', req, { baseURL });
 
-type Props = {
-  setRoomCode: (roomCode: string) => void;
-  setUsername: (username: string) => void;
-};
-
-export const useRooms = ({
-  setRoomCode,
-  setUsername,
-}: Props) => {
+export const useRooms = () => {
   const socket = useSocket();
-  const [inRoom, setInRoom] = useState(false);
+  const { setRoomCode, setUserId } = useRoomStore();
 
   // Check localStorage for existing room data on load
   useEffect(() => {
     const savedRoom = localStorage.getItem('roomCode');
-    const savedUsername = localStorage.getItem('username');
+    const savedUserId = localStorage.getItem('userId');
     
-    if (savedRoom && savedUsername) {
+    if (savedRoom && savedUserId) {
       setRoomCode(savedRoom);
-      setUsername(savedUsername);
-      setInRoom(true);
+      setUserId(savedUserId);
       
       // Rejoin the room via WebSocket
-      socket.emit('join-room', { roomCode: savedRoom, username: savedUsername });
+      socket.emit('join-room', { roomCode: savedRoom, userId: savedUserId });
     }
-  }, [setInRoom, setRoomCode, setUsername, socket]);
+  }, [socket, setRoomCode, setUserId]);
 
   const createRoomMutation = useMutation({
     onMutate: async () => {
       const { code } = await createRoom();
-      setRoomCode(code);
       localStorage.setItem('roomCode', code);
     },
   });
 
-  const joinRoomMutation = useMutation({
-    onMutate: async (req: JoinRequest) => {
-      const user = await joinRoom(req);
-      setUsername(user.name);
-      localStorage.setItem('roomCode', req.code);
-      localStorage.setItem('username', user.name);
-      setInRoom(true);
+  const joinRoomMutation = useMutation<User, Error, JoinRequest>({
+    onMutate: async (req) => {
+      const data = await joinRoom(req);
+
+      if (data.status !== 200) throw new Error('Failed to join room');
+
+      const user = data.data as User;
+
+      console.log('user', user);
+
+      localStorage.setItem('roomCode', user.roomId);
+      localStorage.setItem('userId', user.id);
+
+      setRoomCode(user.roomId);
+      setUserId(user.id);
       
       // Join the room via WebSocket
-      socket.emit('join-room', { roomCode: req.code, username: user.name });
+      socket.emit('join-room', { roomCode: user.roomId, userId: user.id });
+
+      return user;
     },
   });
 
-  return { inRoom, createRoomMutation, joinRoomMutation };
+  return { createRoomMutation, joinRoomMutation };
 };

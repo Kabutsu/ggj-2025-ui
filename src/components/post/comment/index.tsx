@@ -4,20 +4,22 @@ import { CommentIcon } from '../../icons';
 import { usePostStore } from '../store';
 import { useSocket } from '../../../lib/socket';
 import { useComment } from '../../../api/posts';
+import { useRoomStore } from '../../feed/store';
 
 const Comment = () => {
   const socket = useSocket();
   const { mutate } = useComment();
-  const { data: { id, comments } } = usePostStore();
+  const { data: { id } } = usePostStore();
+  const { userId } = useRoomStore();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <form className="w-full relative" onSubmit={(e) => {
       e.preventDefault();
       const comment = {
-        body: inputRef.current?.value || '',
+        content: inputRef.current?.value || '',
         postId: id,
-        id: comments.sort((a, b) => a.id - b.id)[comments.length - 1]?.id + 1 || 1,
+        userId,
       };
 
       socket.emit('comment', comment);

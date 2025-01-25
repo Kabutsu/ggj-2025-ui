@@ -3,14 +3,14 @@ import { createStore } from 'zustand/vanilla';
 
 import { createZustandContext } from '../../lib/zustand';
 
-import type { Comment, Post } from '../../api/posts';
+import type { Comment, Dislike, Like, Post } from '../../api/posts';
 
 type State = {
   data: Post;
-  addLike: () => void;
-  addDislike: () => void;
-  removeLike: () => void;
-  removeDislike: () => void;
+  addLike: (like: Like) => void;
+  addDislike: (dislike: Dislike) => void;
+  removeLike: (like: Like) => void;
+  removeDislike: (dislike: Dislike) => void;
   comment: (comment: Comment) => void;
   viewingComments: boolean;
   toggleCommentsView: () => void;
@@ -19,10 +19,10 @@ type State = {
 export const PostStore = createZustandContext((initialValue: Post) => {
   return createStore<State>((set) => ({
     data: initialValue,
-    addLike: () => set((state) => ({ data: { ...state.data, likes: state.data.likes + 1 } })),
-    addDislike: () => set((state) => ({ data: { ...state.data, dislikes: state.data.dislikes + 1 } })),
-    removeLike: () => set((state) => ({ data: { ...state.data, likes: state.data.likes - 1 } })),
-    removeDislike: () => set((state) => ({ data: { ...state.data, dislikes: state.data.dislikes - 1 } })),
+    addLike: (like) => set((state) => ({ data: { ...state.data, likes: [...state.data.likes, like] } })),
+    addDislike: (dislike) => set((state) => ({ data: { ...state.data, dislikes: [...state.data.dislikes, dislike] } })),
+    removeLike: (like) => set((state) => ({ data: { ...state.data, likes: state.data.likes.filter((l) => l.id !== like.id) } })),
+    removeDislike: (dislike) => set((state) => ({ data: { ...state.data, dislikes: state.data.dislikes.filter((d) => d.id !== dislike.id) } })),
     comment: (comment) => set((state) => ({ data: { ...state.data, comments: [...state.data.comments, comment] } })),
     viewingComments: false,
     toggleCommentsView: () => set((state) => ({ viewingComments: !state.viewingComments })),

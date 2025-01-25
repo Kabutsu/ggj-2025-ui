@@ -6,14 +6,14 @@ import { PostStore, usePostStore } from './store';
 
 import { useSocket } from '../../lib/socket';
 
-import Like from './like';
-import Dislike from './dislike';
+// import Like from './like';
+// import Dislike from './dislike';
 import Comments from './comments';
 import CommentInput from './comment';
 import CommentsList from './comments-list';
 import type { Comment, Post } from '../../api/posts';
 
-const Post = ({ user: { name, sentiment }, body }: Post) => {
+const Post = ({ User: { name, sentiment }, content }: Post) => {
   const socket = useSocket();
   const {
     data: { id },
@@ -51,31 +51,31 @@ const Post = ({ user: { name, sentiment }, body }: Post) => {
       }
     });
   
-    socket.on('liked', ({ postId }: { postId: number }) => {
+    socket.on('liked', ({ postId }: { postId: string }) => {
       if (postId === id) {
         console.log('Like added');
-        addLike();
+        //addLike();
       }
     });
 
-    socket.on('unliked', ({ postId }: { postId: number }) => {
+    socket.on('unliked', ({ postId }: { postId: string }) => {
       if (postId === id) {
         console.log('Like removed');
-        removeLike();
+        //removeLike();
       }
     });
   
-    socket.on('disliked', ({ postId }: { postId: number }) => {
+    socket.on('disliked', ({ postId }: { postId: string }) => {
       if (postId === id) {
         console.log('Dislike added');
-        addDislike();
+        //addDislike();
       }
     });
 
-    socket.on('undisliked', ({ postId }: { postId: number }) => {
+    socket.on('undisliked', ({ postId }: { postId: string }) => {
       if (postId === id) {
         console.log('Dislike removed');
-        removeDislike();
+        //removeDislike();
       }
     });
   
@@ -102,10 +102,10 @@ const Post = ({ user: { name, sentiment }, body }: Post) => {
           />
           <h1 className="text-3xl font-bold">{name}</h1>
         </div>
-        <p className="text-lg w-full text-left">{body}</p>
+        <p className="text-lg w-full text-left">{content}</p>
         <div className="flex items-center justify-start gap-4 w-full pt-2">
-          <Like />
-          <Dislike />
+          {/* <Like />
+          <Dislike /> */}
           <Comments />
           <CommentInput />
         </div>

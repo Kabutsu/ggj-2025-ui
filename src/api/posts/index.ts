@@ -1,43 +1,76 @@
 import axios from 'axios';
-import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 export type User = {
-  id: number;
+  id: string;
   name: string;
-  username: string;
+  profileUrl: string;
   sentiment: number;
+  roomId: string;
+  isTraitor: boolean;
 };
 
 export type Comment = {
-  id: number;
-  postId: number;
-  body: string;
+  id: string;
+  content: string;
+  createdAt: string;
+  userId: string;
+  postId: string;
 };
 
+export type Like = {
+  id: string;
+  userId: string;
+  postId: string;
+};
+
+export type Dislike = {
+  id: string;
+  userId: string;
+  postId: string;
+}
+
 export type Post = {
-  id: number;
-  user: User;
-  body: string;
-  likes: number;
-  dislikes: number;
+  id: string;
+  content: string;
+  createdAt: string;
+  userId: string;
+  roomId: string;
+  
+  User: User;
+  likes: Array<Like>;
+  dislikes: Array<Dislike>;
   comments: Array<Comment>;
 };
 
 const baseURL = `${import.meta.env.VITE_BASE_API_URL}/posts`;
 
-const fetchPosts = async () => {
-  const { data } = await axios.get<Post[]>('/', { baseURL });
+const fetchPosts = async (roomId: string) => {
+  const { data } = await axios.get<Post[]>(`/${roomId}`, { baseURL });
   return data;
 };
 
-export const usePosts = () => {
-  return useSuspenseQuery({
-    queryKey: ['posts'],
-    queryFn: fetchPosts,
+export const usePosts = (roomId: string) => {
+  return useQuery({
+    queryKey: ['posts', roomId],
+    queryFn: () => fetchPosts(roomId),
   });
 };
 
-const postComment = async (comment: Comment) => {
+const createPost = async ({ userId, roomId, content }: { userId: string, roomId: string, content: string }) => {
+  await axios.post('/', { userId, roomId, content }, { baseURL });
+};
+
+export const usePost = ({ roomId, userId, onSettled }: { roomId: string, userId: string, onSettled: () => void }) => {
+  return useMutation({
+    onMutate: async (content: string) => {
+      await createPost({ userId, roomId, content });
+    },
+    onSettled,
+  });
+};
+
+const postComment = async (comment: Pick<Comment, 'content' | 'postId' | 'userId'>) => {
   await axios.post(`/${comment.postId}/comments`, comment, {
     baseURL,
   });
@@ -45,28 +78,30 @@ const postComment = async (comment: Comment) => {
 
 export const useComment = () => {
   return useMutation({
-    onMutate: async (comment: Comment) => {
+    onMutate: async (comment: Pick<Comment, 'content' | 'postId' | 'userId'>) => {
       await postComment(comment);
     },
   });
 };
 
-const react = async (postId: number, type: 'like' | 'dislike', undo: boolean) => {
-  await axios.post(`/${postId}/${undo ? 'un' : ''}${type}`, null, {
-    baseURL,
-  });
-};
+const react = async (postId: string, type: 'like' | 'dislike', undo: boolean) => await axios.post(`/${postId}/${undo ? 'un' : ''}${type}`, null, {
+  baseURL,
+});
 
 export const useReactions = () => {
   const like = useMutation({
-    onMutate: async ({ postId, undo }: { postId: number, undo: boolean }) => {
-      await react(postId, 'like', undo);
+    onMutate: async ({ postId, undo }: { postId: string, undo: boolean }) => {
+      const data = await react(postId, 'like', undo);
+      if (data.status !== 200) throw new Error('Failed to react');
+      return data.data as Like;
     },
   });
 
   const dislike = useMutation({
-    onMutate: async ({ postId, undo }: { postId: number, undo: boolean }) => {
-      await react(postId, 'dislike', undo);
+    onMutate: async ({ postId, undo }: { postId: string, undo: boolean }) => {
+      const data = await react(postId, 'dislike', undo);
+      if (data.status !== 200) throw new Error('Failed to react');
+      return data.data as Dislike;
     },
   });
 
