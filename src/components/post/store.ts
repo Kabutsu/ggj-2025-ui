@@ -3,7 +3,7 @@ import { createStore } from 'zustand/vanilla';
 
 import { createZustandContext } from '../../lib/zustand';
 
-import type { Comment, Post } from '.';
+import type { Comment, Post } from '../../api/posts';
 
 type State = {
   data: Post;

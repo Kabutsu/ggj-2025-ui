@@ -3,20 +3,26 @@ import { useRef } from 'react';
 import { CommentIcon } from '../../icons';
 import { usePostStore } from '../store';
 import { useSocket } from '../../../lib/socket';
+import { useComment } from '../../../api/posts';
 
 const Comment = () => {
   const socket = useSocket();
+  const { mutate } = useComment();
   const { data: { id, comments } } = usePostStore();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <form className="w-full relative" onSubmit={(e) => {
       e.preventDefault();
-      socket.emit('comment', {
+      const comment = {
         body: inputRef.current?.value || '',
         postId: id,
         id: comments.sort((a, b) => a.id - b.id)[comments.length - 1]?.id + 1 || 1,
-      });
+      };
+
+      socket.emit('comment', comment);
+      mutate(comment);
+
       // Clear and unfocus input
       inputRef.current!.value = '';
       inputRef.current?.blur();

@@ -9,34 +9,20 @@ import { useSocket } from '../../lib/socket';
 import Like from './like';
 import Dislike from './dislike';
 import Comments from './comments';
-import Comment from './comment';
+import CommentInput from './comment';
 import CommentsList from './comments-list';
-
-export type User = {
-  id: number;
-  name: string;
-  username: string;
-  sentiment: number;
-};
-
-export type Comment = {
-  id: number;
-  postId: number;
-  body: string;
-};
-
-export type Post = {
-  id: number;
-  user: User;
-  body: string;
-  likes: number;
-  dislikes: number;
-  comments: Array<Comment>;
-};
+import type { Comment, Post } from '../../api/posts';
 
 const Post = ({ user: { name, sentiment }, body }: Post) => {
   const socket = useSocket();
-  const { addLike, addDislike, comment } = usePostStore();
+  const {
+    data: { id },
+    addLike,
+    addDislike,
+    removeLike,
+    removeDislike,
+    comment,
+  } = usePostStore();
 
   const getBorderColor = (sentiment: number) => {
     if (sentiment <= 33) {
@@ -59,27 +45,48 @@ const Post = ({ user: { name, sentiment }, body }: Post) => {
 
   useEffect(() => {
     socket.on('comment', (data: Comment) => {
-      console.log('New comment:', data);
-      comment(data);
+      if (data.postId === id) {
+        console.log('Comment added');
+        comment(data);
+      }
     });
   
-    socket.on('addLike', () => {
-      console.log('Like added');
-      addLike();
+    socket.on('liked', ({ postId }: { postId: number }) => {
+      if (postId === id) {
+        console.log('Like added');
+        addLike();
+      }
+    });
+
+    socket.on('unliked', ({ postId }: { postId: number }) => {
+      if (postId === id) {
+        console.log('Like removed');
+        removeLike();
+      }
     });
   
-    socket.on('addDislike', () => {
-      console.log('Dislike added');
-      addDislike();
+    socket.on('disliked', ({ postId }: { postId: number }) => {
+      if (postId === id) {
+        console.log('Dislike added');
+        addDislike();
+      }
+    });
+
+    socket.on('undisliked', ({ postId }: { postId: number }) => {
+      if (postId === id) {
+        console.log('Dislike removed');
+        removeDislike();
+      }
     });
   
     return () => {
-      socket.off('connect');
       socket.off('comment');
-      socket.off('addLike');
-      socket.off('addDislike');
+      socket.off('liked');
+      socket.off('disliked');
+      socket.off('unliked');
+      socket.off('undisliked');
     };
-  }, [comment, addLike, addDislike, socket]);
+  }, [comment, addLike, addDislike, removeLike, removeDislike, id, socket]);
 
   return (
     <>
@@ -100,7 +107,7 @@ const Post = ({ user: { name, sentiment }, body }: Post) => {
           <Like />
           <Dislike />
           <Comments />
-          <Comment />
+          <CommentInput />
         </div>
       </div>
       <CommentsList />
