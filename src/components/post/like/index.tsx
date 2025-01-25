@@ -1,22 +1,28 @@
 import { useState } from 'react';
 
 import { ThumbUpIcon, ThumbUpIconFilled } from '../../icons';
+import { usePostStore } from '../store';
 
-type Props = {
-  likes: number | null;
-};
-
-const Like = ({ likes }: Props) => {
+const Like = () => {
+  const { data: { likes }, addLike, removeLike } = usePostStore();
   const [liked, setLiked] = useState(false);
   const Icon = liked ? ThumbUpIconFilled : ThumbUpIcon;
 
   return (
     <button
-      onClick={() => setLiked((prev) => !prev)}
+      onClick={() => {
+        if (liked) {
+          removeLike();
+        } else {
+          addLike();
+        }
+
+        setLiked((prev) => !prev);
+      }}
       className="flex items-center gap-1"
     >
       <Icon className="w-6 h-6" />
-      <span>{liked ? (likes ?? 0) + 1 : likes}</span>
+      <span>{likes}</span>
     </button>
   );
 };
