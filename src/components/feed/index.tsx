@@ -27,7 +27,7 @@ const Feed = () => {
   if (isError) return <div>Error fetching posts</div>;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col md:w-[40rem] md:mx-auto md:pt-10">
       {posts?.map((post) => (
         <Post key={post.id} {...post} />
       ))}

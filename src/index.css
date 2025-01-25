@@ -38,13 +38,16 @@ body {
   margin: 0;
   display: flex;
   min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
   display: block;
   line-height: 1.1;
   font-weight: bold;
+}
+
+button {
+  cursor: pointer;
 }
 
 @media (prefers-color-scheme: light) {

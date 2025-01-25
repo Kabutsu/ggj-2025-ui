@@ -29,7 +29,7 @@ export default function GameRoom() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col items-center justify-start gap-5 w-full h-full p-10 pt-25"
+      className="flex flex-col items-center justify-start gap-5 w-full h-full p-10 pt-25 md:w-48 md:mx-auto"
     >
       <h1 className="text-off-black font-bold text-center mb-5">
         Welcome to<br /><span className="text-blue-400">The Social Bubble</span>

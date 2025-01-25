@@ -86,7 +86,7 @@ const Post = ({ User: { name, sentiment }, content }: Post) => {
 
   return (
     <>
-      <div className="bg-off-white flex flex-col items-center justify-center gap-1 p-2 border-t-2 border-off-gray">
+      <div className="bg-off-white flex flex-col items-center justify-center gap-1 p-2 border-t-2 border-off-gray md:border-t-10">
         <div className="flex items-center justify-start gap-2 w-full">
           <img
             src={viteLogo}
