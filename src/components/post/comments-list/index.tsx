@@ -15,7 +15,7 @@ const CommentsList = () => {
         {comments.map((comment, index) => (
           <div key={index} className="flex flex-col items-start p-2 border-b-2 border-off-gray">
             <h3 className="font-bold">{comment.id}</h3>
-            <p>{comment.body}</p>
+            <p>{comment.content}</p>
           </div>
         ))}
       </div>
