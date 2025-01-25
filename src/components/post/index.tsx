@@ -1,6 +1,10 @@
+import { useEffect } from 'react';
+
 import viteLogo from '/vite.svg';
 
-import { PostStore } from './store';
+import { PostStore, usePostStore } from './store';
+
+import { useSocket } from '../../lib/socket';
 
 import Like from './like';
 import Dislike from './dislike';
@@ -30,7 +34,10 @@ export type Post = {
   comments: Array<Comment>;
 };
 
-const Post = ({ user, body, ...rest }: Post) => {
+const Post = ({ user: { name, sentiment }, body }: Post) => {
+  const socket = useSocket();
+  const { addLike, addDislike, comment } = usePostStore();
+
   const getBorderColor = (sentiment: number) => {
     if (sentiment <= 33) {
       // Red to Orange
@@ -50,8 +57,32 @@ const Post = ({ user, body, ...rest }: Post) => {
     }
   };
 
+  useEffect(() => {
+    socket.on('comment', (data: Comment) => {
+      console.log('New comment:', data);
+      comment(data);
+    });
+  
+    socket.on('addLike', () => {
+      console.log('Like added');
+      addLike();
+    });
+  
+    socket.on('addDislike', () => {
+      console.log('Dislike added');
+      addDislike();
+    });
+  
+    return () => {
+      socket.off('connect');
+      socket.off('comment');
+      socket.off('addLike');
+      socket.off('addDislike');
+    };
+  }, [comment, addLike, addDislike, socket]);
+
   return (
-    <PostStore.Provider initialValue={{ user, body, ...rest }}>
+    <>
       <div className="bg-off-white flex flex-col items-center justify-center gap-1 p-2 border-t-2 border-off-gray">
         <div className="flex items-center justify-start gap-2 w-full">
           <img
@@ -59,10 +90,10 @@ const Post = ({ user, body, ...rest }: Post) => {
             alt="Vite Logo"
             className="w-10 h-10 rounded-full"
             style={{
-              border: `4px solid ${getBorderColor(user.sentiment)}`, // Dynamic border color
+              border: `4px solid ${getBorderColor(sentiment)}`, // Dynamic border color
             }}
           />
-          <h1 className="text-3xl font-bold">{user.name}</h1>
+          <h1 className="text-3xl font-bold">{name}</h1>
         </div>
         <p className="text-lg w-full text-left">{body}</p>
         <div className="flex items-center justify-start gap-4 w-full pt-2">
@@ -73,8 +104,14 @@ const Post = ({ user, body, ...rest }: Post) => {
         </div>
       </div>
       <CommentsList />
-    </PostStore.Provider>
+    </>
   );
 };
 
-export default Post;
+const PostWrapper = (props: Post) => (
+  <PostStore.Provider initialValue={props}>
+    <Post {...props} />
+  </PostStore.Provider>
+);
+
+export default PostWrapper;

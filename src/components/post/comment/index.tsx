@@ -2,15 +2,17 @@ import { useRef } from 'react';
 
 import { CommentIcon } from '../../icons';
 import { usePostStore } from '../store';
+import { useSocket } from '../../../lib/socket';
 
 const Comment = () => {
-  const { data: { id, comments }, comment: postComment } = usePostStore();
+  const socket = useSocket();
+  const { data: { id, comments } } = usePostStore();
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <form className="w-full relative" onSubmit={(e) => {
       e.preventDefault();
-      postComment({
+      socket.emit('comment', {
         body: inputRef.current?.value || '',
         postId: id,
         id: comments.sort((a, b) => a.id - b.id)[comments.length - 1]?.id + 1 || 1,
