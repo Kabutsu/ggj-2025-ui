@@ -13,7 +13,7 @@ import Comments from './comments';
 import CommentInput from './comment';
 import CommentsList from './comments-list';
 
-const Post = ({ User: { name, sentiment }, content }: Post) => {
+const Post = ({ User: { name, sentiment, profileUrl }, content }: Post) => {
   const socket = useSocket();
   const {
     data: { id },
@@ -86,11 +86,11 @@ const Post = ({ User: { name, sentiment }, content }: Post) => {
 
   return (
     <>
-      <div className="bg-off-white flex flex-col items-center justify-center gap-1 p-2 border-t-2 border-off-gray md:border-t-10">
+      <div className="bg-off-white flex flex-col items-center justify-center gap-1 p-2 border-t-2 border-off-gray md:border-none md:mb-5 md:rounded-2xl md:p-4">
         <div className="flex items-center justify-start gap-2 w-full">
           <img
-            src={viteLogo}
-            alt="Vite Logo"
+            src={profileUrl || viteLogo}
+            alt={`${name}'s profile picture`}
             className="w-10 h-10 rounded-full"
             style={{
               border: `4px solid ${getBorderColor(sentiment)}`,

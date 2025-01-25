@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-const SWIPE_DOWN_THRESHOLD = 50;
+const SWIPE_DOWN_THRESHOLD = 30;
 
 type Props = {
   isVisible: boolean;
