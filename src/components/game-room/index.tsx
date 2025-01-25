@@ -34,6 +34,13 @@ export default function GameRoom() {
       <h1 className="text-off-black font-bold text-center mb-5">
         Welcome to<br /><span className="text-blue-400">The Social Bubble</span>
       </h1>
+      <p className="text-gray-600 text-center">
+        Step into the world of <span className="font-bold text-blue-400">The Social Bubble</span>, where Mods strive to keep the peace, but beware—Trolls are lurking to spread chaos! Your mission is simple: work with your fellow Mods to maintain harmony, or, if you're a Troll, stir up disinformation without getting caught. 
+      </p>
+      <p className="text-gray-600 text-center mb-5">
+        Whether you’re defending or deceiving, every interaction shapes the future of the Bubble. Will you uphold order, or watch it crumble?
+      </p>
+
       {/* <button onClick={() => handleCreateRoom()}>Create Room</button> */}
       {/* <input
         type="text"
