@@ -84,22 +84,31 @@ export const useComment = () => {
   });
 };
 
-const react = async (postId: string, type: 'like' | 'dislike', undo: boolean) => await axios.post(`/${postId}/${undo ? 'un' : ''}${type}`, null, {
-  baseURL,
-});
+const react = async (
+  postId: string,
+  userId: string,
+  type: 'like' | 'dislike',
+  undo: boolean,
+) => await axios.post(
+  `/${postId}/${undo ? 'un' : ''}${type}`,
+  { userId },
+  { baseURL },
+);
+
+type ReactRequest = { postId: string, userId: string, undo: boolean };
 
 export const useReactions = () => {
-  const like = useMutation({
-    onMutate: async ({ postId, undo }: { postId: string, undo: boolean }) => {
-      const data = await react(postId, 'like', undo);
+  const like = useMutation<Like, Error, ReactRequest>({
+    mutationFn: async ({ postId, userId, undo }: ReactRequest) => {
+      const data = await react(postId, userId, 'like', undo);
       if (data.status !== 200) throw new Error('Failed to react');
       return data.data as Like;
     },
   });
 
-  const dislike = useMutation({
-    onMutate: async ({ postId, undo }: { postId: string, undo: boolean }) => {
-      const data = await react(postId, 'dislike', undo);
+  const dislike = useMutation<Dislike, Error, ReactRequest>({
+    mutationFn: async ({ postId, userId, undo }: ReactRequest) => {
+      const data = await react(postId, userId, 'dislike', undo);
       if (data.status !== 200) throw new Error('Failed to react');
       return data.data as Dislike;
     },

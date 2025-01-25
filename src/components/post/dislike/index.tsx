@@ -4,21 +4,28 @@ import { ThumbDownIcon, ThumbDownIconFilled } from '../../icons';
 import { usePostStore } from '../store';
 import { useSocket } from '../../../lib/socket';
 import { useReactions } from '../../../api/posts';
+import { useRoomStore } from '../../feed/store';
 
 const Dislike = () => {
   const socket = useSocket();
-  const { dislike: { mutate } } = useReactions();
+
+  const { dislike: { mutateAsync } } = useReactions();
+
   const { data: { dislikes, id: postId } } = usePostStore();
-  const [disliked, setDisliked] = useState(false);
+  const { userId } = useRoomStore();
+
+  const [disliked, setDisliked] = useState(dislikes.some((dislike) => dislike.userId === userId));
   const Icon = disliked ? ThumbDownIconFilled : ThumbDownIcon;
 
   const onDislike = () => {
     if (disliked) {
-      socket.emit('undislike', { postId });
-      mutate({ postId, undo: true });
+      mutateAsync({ postId, userId, undo: true }).then((res) => {
+        socket.emit('undislike', res);
+      });
     } else {
-      socket.emit('dislike', { postId });
-      mutate({ postId, undo: false });
+      mutateAsync({ postId, userId, undo: false }).then((res) => {
+        socket.emit('dislike', res);
+      });
     }
 
     setDisliked((prev) => !prev);

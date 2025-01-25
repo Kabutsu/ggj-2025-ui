@@ -4,21 +4,36 @@ import { ThumbUpIcon, ThumbUpIconFilled } from '../../icons';
 import { usePostStore } from '../store';
 import { useSocket } from '../../../lib/socket';
 import { useReactions } from '../../../api/posts';
+import { useRoomStore } from '../../feed/store';
 
 const Like = () => {
   const socket = useSocket();
+
   const { like: { mutateAsync } } = useReactions();
+
   const { data: { likes, id: postId } } = usePostStore();
-  const [liked, setLiked] = useState(false);
+  const { userId } = useRoomStore();
+
+  const [liked, setLiked] = useState(likes.some((like) => like.userId === userId));
   const Icon = liked ? ThumbUpIconFilled : ThumbUpIcon;
 
   const onLike = () => {
     if (liked) {
-      socket.emit('unlike', { postId });
-      mutateAsync({ postId, undo: true });
+      mutateAsync({ postId, userId, undo: true })
+        .then((res) => {
+          socket.emit('unlike', res);
+        })
+        .catch((err) => {
+          console.log('Error undoing like', err);
+        });
     } else {
-      socket.emit('like', { postId });
-      mutateAsync({ postId, undo: false });
+      mutateAsync({ postId, userId, undo: false })
+        .then((res) => {
+          socket.emit('like', res);
+        })
+        .catch((err) => {
+          console.log('Error liking', err);
+        });
     }
 
     setLiked((prev) => !prev);
