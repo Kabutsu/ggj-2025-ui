@@ -93,10 +93,10 @@ const Post = ({ User: { name, sentiment }, content }: Post) => {
             alt="Vite Logo"
             className="w-10 h-10 rounded-full"
             style={{
-              border: `4px solid ${getBorderColor(sentiment)}`, // Dynamic border color
+              border: `4px solid ${getBorderColor(sentiment)}`,
             }}
           />
-          <h1 className="text-3xl font-bold">{name}</h1>
+          <h1 className="text-2xl font-bold">{name}</h1>
         </div>
         <p className="text-lg w-full text-left">{content}</p>
         <div className="flex items-center justify-start gap-4 w-full pt-2">

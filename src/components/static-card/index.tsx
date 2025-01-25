@@ -7,9 +7,10 @@ type Props = {
   toggleIsVisible: () => void;
   children: React.ReactNode;
   dismissThreshold?: number;
+  disabled?: boolean;
 };
 
-const StaticCard = ({ isVisible, toggleIsVisible, children, dismissThreshold = SWIPE_DOWN_THRESHOLD }: Props) => {
+const StaticCard = ({ isVisible, toggleIsVisible, children, dismissThreshold = SWIPE_DOWN_THRESHOLD, disabled = false }: Props) => {
   const bodyRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef<number | null>(null);
 
@@ -33,19 +34,19 @@ const StaticCard = ({ isVisible, toggleIsVisible, children, dismissThreshold = S
 
   useEffect(() => {
     const commentsElement = bodyRef.current;
-    if (commentsElement) {
+    if (commentsElement && !disabled) {
       commentsElement.addEventListener('touchstart', handleTouchStart);
       commentsElement.addEventListener('touchmove', handleTouchMove);
       commentsElement.addEventListener('touchend', handleTouchEnd);
     }
     return () => {
-      if (commentsElement) {
+      if (commentsElement && !disabled) {
         commentsElement.removeEventListener('touchstart', handleTouchStart);
         commentsElement.removeEventListener('touchmove', handleTouchMove);
         commentsElement.removeEventListener('touchend', handleTouchEnd);
       }
     };
-  }, [handleTouchMove]);
+  }, [handleTouchMove, disabled]);
 
   useEffect(() => {
     // Manage body overflow based on viewingComments state
