@@ -36,7 +36,10 @@ export default function GameRoom() {
         Welcome to<br /><span className="text-blue-400">The Social Bubble</span>
       </h1>
       <p className="text-gray-600 text-center">
-        Step into the world of <span className="font-bold text-blue-400">The Social Bubble</span>, where Mods strive to keep the peace, but beware—Trolls are lurking to spread chaos! Your mission is simple: work with your fellow Mods to maintain harmony, or, if you're a Troll, stir up disinformation without getting caught. 
+        Welcome to <span className="font-bold text-blue-400">The Social Bubble</span>, where every action has a social consequence. Gain likes and comments to increas your social standing, and downvote posts you dislike to block other users from the game. 
+      </p>
+      <p className="text-gray-600 text-center mb-5">
+        But watch out - there are Trolls among us, and they're out to sow chaos and discord. Can you identify them before it's too late?
       </p>
       <p className="text-gray-600 text-center mb-5">
         Whether you’re defending or deceiving, every interaction shapes the future of the Bubble. Will you uphold order, or watch it crumble?

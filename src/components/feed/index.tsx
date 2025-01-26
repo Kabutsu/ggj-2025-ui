@@ -55,6 +55,10 @@ const Feed = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setSentiment(userData?.sentiment);
+  }, [userData?.sentiment]);
+
   if (sentiment != null && sentiment <= 0) return (
     <div className="flex flex-col items-center justify-center gap-12 h-full w-full bg-off-black">
       <h1 className=" text-3xl font-bold text-off-white text-center">You are banned from<br /><span className="font-extrabold text-red-800">The Social Bubble</span></h1>
