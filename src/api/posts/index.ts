@@ -23,12 +23,14 @@ export type Like = {
   id: string;
   userId: string;
   postId: string;
+  User: User;
 };
 
 export type Dislike = {
   id: string;
   userId: string;
   postId: string;
+  User: User;
 }
 
 export type Post = {
