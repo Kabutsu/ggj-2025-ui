@@ -39,7 +39,7 @@ export default function GameRoom() {
         Step into the world of <span className="font-bold text-blue-400">The Social Bubble</span>, where Mods strive to keep the peace, but beware—Trolls are lurking to spread chaos! Your mission is simple: work with your fellow Mods to maintain harmony, or, if you're a Troll, stir up disinformation without getting caught. 
       </p>
       <p className="text-gray-600 text-center mb-5">
-        Whether you&apost;re defending or deceiving, every interaction shapes the future of the Bubble. Will you uphold order, or watch it crumble?
+        Whether you’re defending or deceiving, every interaction shapes the future of the Bubble. Will you uphold order, or watch it crumble?
       </p>
       <input
         className="w-full md:w-80 border-2 border-blue-400 py-2 px-5 rounded-full bg-off-gray text-gray-800"
