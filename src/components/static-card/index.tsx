@@ -68,6 +68,7 @@ const StaticCard = ({ isVisible, toggleIsVisible, children, dismissThreshold = S
       className={`fixed inset-0 bg-white z-50 transform transition-transform 
                   duration-300 ease-in-out
                   md:w-1/2 md:left-1/4
+                  overflow-y-scroll
                   ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}
     >
       {children}

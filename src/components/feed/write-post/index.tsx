@@ -35,7 +35,7 @@ const WritePost = () => {
         </div>
         <textarea
           placeholder="What's on your mind?"
-          className="w-full h-30 py-2 px-3 bg-off-gray text-gray-800 rounded-lg"
+          className="w-full h-30 py-2 px-3 bg-off-gray text-gray-800 rounded-lg resize-none"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />

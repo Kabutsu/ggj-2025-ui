@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import viteLogo from '/vite.svg';
 
@@ -13,7 +13,7 @@ import Comments from './comments';
 import CommentInput from './comment';
 import CommentsList from './comments-list';
 
-const Post = ({ User: { name, sentiment, profileUrl }, content }: Post) => {
+const Post = ({ User: { name, sentiment, profileUrl, id: userId }, content }: Post) => {
   const socket = useSocket();
   const {
     data: { id },
@@ -24,29 +24,30 @@ const Post = ({ User: { name, sentiment, profileUrl }, content }: Post) => {
     comment,
   } = usePostStore();
 
-  const getBorderColor = (sentiment: number) => {
-    if (sentiment <= 33) {
+  const [userSentiment, setUserSentiment] = useState(sentiment);
+
+  const borderColor = useMemo(() => {
+    if (userSentiment <= 33) {
       // Red to Orange
       const red = 255;
-      const green = Math.floor((sentiment / 33) * 165); // 0 to 165
+      const green = Math.floor((userSentiment / 33) * 165); // 0 to 165
       return `rgb(${red}, ${green}, 0)`; // Red to Orange
-    } else if (sentiment <= 66) {
+    } else if (userSentiment <= 66) {
       // Orange to Yellow
       const red = 255;
-      const green = Math.floor(((sentiment - 33) / 33) * 255); // 0 to 255
+      const green = Math.floor(((userSentiment - 33) / 33) * 255); // 0 to 255
       return `rgb(${red}, ${green}, 0)`; // Orange to Yellow
     } else {
       // Yellow to Green
       const green = 255;
-      const red = Math.floor(((100 - sentiment) / 34) * 255); // 255 to 0
+      const red = Math.floor(((100 - userSentiment) / 34) * 255); // 255 to 0
       return `rgb(${red}, ${green}, 0)`; // Yellow to Green
     }
-  };
+  }, [userSentiment]);
 
   useEffect(() => {
     socket.on('comment', (data: Comment) => {
       if (data.postId === id) {
-        console.log('Comment added');
         comment(data);
       }
     });
@@ -74,6 +75,12 @@ const Post = ({ User: { name, sentiment, profileUrl }, content }: Post) => {
         removeDislike(data);
       }
     });
+
+    socket.on('sentiment', (data: { userId: string; sentiment: number }) => {
+      if (data.userId === userId) {
+        setUserSentiment(Math.max(0, Math.min(100, data.sentiment)));
+      }
+    });
   
     return () => {
       socket.off('comment');
@@ -81,8 +88,9 @@ const Post = ({ User: { name, sentiment, profileUrl }, content }: Post) => {
       socket.off('disliked');
       socket.off('unliked');
       socket.off('undisliked');
+      socket.off('sentiment');
     };
-  }, [comment, addLike, addDislike, removeLike, removeDislike, id, socket]);
+  }, [comment, addLike, addDislike, removeLike, removeDislike, id, userId, socket]);
 
   return (
     <>
@@ -91,9 +99,9 @@ const Post = ({ User: { name, sentiment, profileUrl }, content }: Post) => {
           <img
             src={profileUrl || viteLogo}
             alt={`${name}'s profile picture`}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full transition-colors duration-300 ease-in-out"
             style={{
-              border: `4px solid ${getBorderColor(sentiment)}`,
+              border: `4px solid ${borderColor}`,
             }}
           />
           <h1 className="text-2xl font-bold">{name}</h1>
