@@ -1,18 +1,18 @@
 import { useEffect } from 'react';
 import axios, { AxiosResponse } from 'axios';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { useSocket } from '../../lib/socket';
 import { User } from '../posts';
 import { useRoomStore } from '../../components/feed/store';
 
-type Room = {
-  id: string;
-  code: string;
-  createdAt: Date;
-  users: Array<User>;
-  traitors: Array<User>;
-};
+// type Room = {
+//   id: string;
+//   code: string;
+//   createdAt: Date;
+//   users: Array<User>;
+//   traitors: Array<User>;
+// };
 
 type JoinRequest = {
   code: string;
@@ -20,14 +20,19 @@ type JoinRequest = {
   profileUrl: string;
 };
 
+type RoomStatus = {
+  traitorCount: number;
+  blockedUsers: Array<User>;
+};
+
 const baseURL = `${import.meta.env.VITE_BASE_API_URL}/rooms`;
 
-const createRoom = async () => await axios.post<undefined, Room>('/create', { baseURL });
 const joinRoom = async (req: JoinRequest) => await axios.post<JoinRequest, AxiosResponse<User>>('/join-room', req, { baseURL });
+const getRoomStatus = async (code: string) => await axios.get<undefined, AxiosResponse<RoomStatus>>(`/${code}/status`, { baseURL });
 
 export const useRooms = () => {
   const socket = useSocket();
-  const { setRoomCode, setUserId } = useRoomStore();
+  const { roomCode, setRoomCode, setUserId } = useRoomStore();
 
   // Check localStorage for existing room data on load
   useEffect(() => {
@@ -42,13 +47,6 @@ export const useRooms = () => {
       socket.emit('join-room', { roomCode: savedRoom, userId: savedUserId });
     }
   }, [socket, setRoomCode, setUserId]);
-
-  const createRoomMutation = useMutation({
-    onMutate: async () => {
-      const { code } = await createRoom();
-      localStorage.setItem('roomCode', code);
-    },
-  });
 
   const joinRoomMutation = useMutation<User, Error, JoinRequest>({
     mutationFn: async (req) => {
@@ -71,5 +69,18 @@ export const useRooms = () => {
     },
   });
 
-  return { createRoomMutation, joinRoomMutation };
+  const roomStatus = useQuery<RoomStatus>({
+    queryKey: ['room-status', roomCode],
+    queryFn: async () => {
+      const data = await getRoomStatus(roomCode);
+
+      if (data.status !== 200) throw new Error('Failed to get room status');
+
+      return data.data;
+    },
+    refetchInterval: 5000,
+    enabled: !!roomCode?.length,
+  });
+
+  return { joinRoomMutation, roomStatus };
 };

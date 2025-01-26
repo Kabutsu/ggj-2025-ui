@@ -6,7 +6,11 @@ import { useSocket } from '../../../lib/socket';
 import { useComment } from '../../../api/posts';
 import { useRoomStore } from '../../feed/store';
 
-const Comment = () => {
+type Props = {
+  disabled: boolean;
+};
+
+const Comment = ({ disabled }: Props) => {
   const socket = useSocket();
   const { mutate } = useComment();
   const { data: { id } } = usePostStore();
@@ -32,11 +36,15 @@ const Comment = () => {
       <input
         ref={inputRef}
         type="text"
-        placeholder="Leave a comment..."
+        placeholder={disabled ? 'This user is blocked.' : 'Leave a comment...'}
         className="w-full py-2 pl-2.5 pr-10 bg-off-gray text-gray-800 rounded-full relative"
+        disabled={disabled}
       />
-      <button type="submit" className="absolute right-2 top-2">
-        <CommentIcon className="w-6 h-6" />
+      <button
+        className="absolute right-2 top-2"
+        type="submit"
+        disabled={disabled}>
+        <CommentIcon className={`w-6 h-6 ${disabled ? 'fill-gray-400' : ''}`} />
       </button>
     </form>
   )

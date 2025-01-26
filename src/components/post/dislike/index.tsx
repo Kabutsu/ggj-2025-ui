@@ -6,7 +6,11 @@ import { useSocket } from '../../../lib/socket';
 import { useReactions } from '../../../api/posts';
 import { useRoomStore } from '../../feed/store';
 
-const Dislike = () => {
+type Props = {
+  disabled: boolean;
+};
+
+const Dislike = ({ disabled }: Props) => {
   const socket = useSocket();
 
   const { dislike: { mutateAsync } } = useReactions();
@@ -35,9 +39,10 @@ const Dislike = () => {
     <button
       onClick={onDislike}
       className="flex items-center gap-1"
+      disabled={disabled}
     >
-      <Icon className="w-6 h-6" />
-      <span>{dislikes.length}</span>
+      <Icon className={`w-6 h-6 ${disabled ? 'fill-gray-400' : ''}`} />
+      <span className={disabled ? 'text-gray-400' : ''}>{dislikes.length}</span>
     </button>
   );
 };

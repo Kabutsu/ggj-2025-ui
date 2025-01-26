@@ -10,6 +10,7 @@ import PostButton from './post-button';
 import WritePost from './write-post';
 import { useRoomStore } from './store';
 import { useUser } from '../../api/users';
+import FeedHeader from './header';
 
 const Feed = () => {
   const socket = useSocket();
@@ -74,7 +75,8 @@ const Feed = () => {
   if (isError) return <div>Error fetching posts</div>;
 
   return (
-    <div className="flex flex-col md:w-[40rem] md:mx-auto md:pt-10">
+    <div className="flex flex-col md:w-[40rem] md:mx-auto md:pt-5">
+      <FeedHeader />
       {posts?.map((post) => (
         <Post key={post.id} {...post} />
       ))}
