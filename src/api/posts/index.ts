@@ -8,6 +8,10 @@ export type User = {
   sentiment: number;
   roomId: string;
   isTraitor: boolean;
+  likes: Array<Like>;
+  dislikes: Array<Dislike>;
+  comments: Array<Comment>;
+  posts: Array<Post>;
 };
 
 export type Comment = {
@@ -24,6 +28,7 @@ export type Like = {
   userId: string;
   postId: string;
   User: User;
+  Post: Post;
 };
 
 export type Dislike = {
@@ -31,6 +36,7 @@ export type Dislike = {
   userId: string;
   postId: string;
   User: User;
+  Post: Post;
 }
 
 export type Post = {

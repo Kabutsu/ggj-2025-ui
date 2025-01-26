@@ -4,7 +4,10 @@ import { useSocket } from '../../../lib/socket';
 
 import type { User } from '../../../api/posts';
 
-const UserInfo = ({ name, sentiment, profileUrl, id, isBlocked }: User & { isBlocked: boolean }) => {
+import { useUserInfoStore } from './store';
+import UserProfileView from './detailed-view';
+
+const UserInfo = ({ name, sentiment, profileUrl, id, isBlocked, ...rest }: User & { isBlocked: boolean }) => {
   const socket = useSocket();
 
   const [userSentiment, setUserSentiment] = useState(sentiment);
@@ -40,21 +43,26 @@ const UserInfo = ({ name, sentiment, profileUrl, id, isBlocked }: User & { isBlo
     };
   }, [socket, id]);
 
+  const { toggle } = useUserInfoStore();
+
   return (
-    <div className="flex items-center justify-start gap-2 w-full">
-      <img
-        src={profileUrl}
-        alt={`${name}'s profile picture`}
-        className="w-10 h-10 rounded-full transition-colors duration-300 ease-in-out"
-        style={{
-          border: `4px solid ${borderColor}`,
-          opacity: isBlocked ? 0.2 : 1,
-        }}
-      />
-      <h1 className={`text-2xl font-bold ${isBlocked ? 'line-through opacity-20' : ''}`}>
-        {name}
-      </h1>
-    </div>
+    <>
+      <div className="flex items-center justify-start gap-2 mr-auto cursor-pointer" onClick={() => toggle(id)}>
+        <img
+          src={profileUrl}
+          alt={`${name}'s profile picture`}
+          className="w-10 h-10 rounded-full transition-colors duration-300 ease-in-out"
+          style={{
+            border: `4px solid ${borderColor}`,
+            opacity: isBlocked ? 0.2 : 1,
+          }}
+        />
+        <h1 className={`text-2xl font-bold ${isBlocked ? 'line-through opacity-20' : ''}`}>
+          {name}
+        </h1>
+      </div>
+      <UserProfileView {...{ name, sentiment, profileUrl, id, isBlocked, ...rest }} />
+    </>
   );
 };
 
