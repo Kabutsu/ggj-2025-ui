@@ -12,6 +12,16 @@ export type User = {
   dislikes: Array<Dislike>;
   comments: Array<Comment>;
   posts: Array<Post>;
+  flags: Array<Flag>;
+  flaggedBy: Array<Flag>;
+};
+
+type Flag = {
+  id: string;
+  userId: string;
+  flaggedById: string;
+  User: User;
+  flaggedBy: User;
 };
 
 export type Comment = {

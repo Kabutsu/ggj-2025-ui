@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 
 import { User } from "../posts";
@@ -9,9 +9,15 @@ export const useUser = (userId: string, user?: User) => {
   return useQuery({
     queryKey: ['user', userId],
     queryFn: () => {
-      if (user != null) return user;
+      if (user != null) console.log(user);
 
       return axios.get<undefined, AxiosResponse<User>>(`${userId}`, { baseURL }).then((res) => res.data);
     },
   });
-}
+};
+
+export const useFlagUser = ({ userId, flaggedById }: { userId: string, flaggedById: string }) => {
+  return useMutation({
+    mutationFn: () => axios.post(`${userId}/flag`, { flaggedById}, { baseURL }),
+  });
+};
