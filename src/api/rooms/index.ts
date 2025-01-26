@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
 import { useSocket } from '../../lib/socket';
@@ -23,7 +23,7 @@ type JoinRequest = {
 const baseURL = `${import.meta.env.VITE_BASE_API_URL}/rooms`;
 
 const createRoom = async () => await axios.post<undefined, Room>('/create', { baseURL });
-const joinRoom = async (req: JoinRequest) => await axios.post('/join-room', req, { baseURL });
+const joinRoom = async (req: JoinRequest) => await axios.post<JoinRequest, AxiosResponse<User>>('/join-room', req, { baseURL });
 
 export const useRooms = () => {
   const socket = useSocket();
@@ -51,14 +51,12 @@ export const useRooms = () => {
   });
 
   const joinRoomMutation = useMutation<User, Error, JoinRequest>({
-    onMutate: async (req) => {
+    mutationFn: async (req) => {
       const data = await joinRoom(req);
 
       if (data.status !== 200) throw new Error('Failed to join room');
 
-      const user = data.data as User;
-
-      console.log('user', user);
+      const { data: user } = data;
 
       localStorage.setItem('roomCode', user.roomId);
       localStorage.setItem('userId', user.id);
