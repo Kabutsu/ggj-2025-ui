@@ -65,6 +65,18 @@ const UserProfileView = ({ id, profileUrl, name }: User) => {
             />
             <h1 className={`text-4xl font-bold pr-2 ${isBlocked ? 'line-through opacity-20' : ''}`}>{name}</h1>
           </div>
+          {isBlocked ? (
+            <h2 className="text-xl text-left w-full text-red-800 font-bold">
+              This user has been banned from <span className="font-extrabold">The Social Bubble.</span>
+              <br />
+              <span className="text-off-black">They were {data?.isTraitor ? (
+                <span className="text-red-800 font-extrabold">a Troll</span>
+              ): (
+                <span className="text-blue-400 font-extrabold">a Mod</span>
+              )}.
+              </span>
+            </h2>
+          ) : null}
           <div className="flex items-center justify-start gap-2 p-2 w-full border-b-2 border-off-gray">
             <WritePostIcon className="w-10 h-10" />
             <p className="text-xl"><span className="font-bold">Posts:</span> {data?.posts?.length}</p>
